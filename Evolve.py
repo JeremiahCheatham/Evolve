@@ -27,7 +27,7 @@ evolve_count = (level * 3)
 player_x = CENTER_X
 player_y = CENTER_Y
 last_direction = "up"
-        
+
 running = True
 immune_timer = 0
 reset_timer = TIMER
@@ -48,12 +48,14 @@ pygame.display.set_icon(ICON)
 background = pygame.image.load("images/bubbles.png").convert_alpha()
 background2 = pygame.image.load("images/bubbles2.png").convert_alpha()
 
+
 def load_sprite(name):
     sprite = pygame.sprite.Sprite()
     sprite.image = pygame.image.load("images/" + name + ".png").convert_alpha()
     sprite.mask = pygame.mask.from_surface(sprite.image)
     sprite.rect = sprite.image.get_rect()
     return sprite
+
 
 def load_player(gen):
     global player_sprites, player_v, player, shield
@@ -87,6 +89,7 @@ def load_player(gen):
         shield = load_sprite("shield-large")
     shield.rect.center = [player_x, player_y]
 
+
 def load_food():
     spritelist = []
     sprite = load_sprite("food")
@@ -98,11 +101,13 @@ def load_food():
     spritelist.append(spritey)
     food.append(spritelist)
 
+
 def create_food(n):
     global food
     food = []
     for i in range(n):
         load_food()
+
 
 def load_fish(name, gen):
     spritelist = []
@@ -123,7 +128,8 @@ def load_fish(name, gen):
     else:
         sprite.rect.centerx = WIDTH + randint(0, CENTER_X)
         fish_v *= -1
-    sprite.rect.centery = randint(int((sprite.rect.height / 2)), (HEIGHT - int((sprite.rect.height / 2))))
+    sprite.rect.centery = randint(int((sprite.rect.height / 2)),
+                                  (HEIGHT - int((sprite.rect.height / 2))))
     spritelist.append(sprite)
     spritelist.append(sprite.rect.centerx)
     spritelist.append(sprite.rect.centery)
@@ -170,6 +176,7 @@ def load_fish(name, gen):
         spritelist.append(0)
     fish.append(spritelist)
 
+
 def create_fish(number):
     global fish
     fish = []
@@ -191,28 +198,30 @@ def create_fish(number):
         for j in range(6):
             load_fish("player", (j + 1))
 
+
 class Bubble_Text:
     def __init__(self, text, size, color, bcolor):
         self.text = text
         self.size = size
         self.color = color
         self.bcolor = bcolor
-    
+
         font = pygame.font.Font(GAME_FONT, self.size)
         text = font.render(self.text, True, self.color)
         self.surface = pygame.Surface((text.get_width() + 20, text.get_height() + 20))
         self.surface = self.surface.convert_alpha()
         self.surface.fill((0, 0, 0, 0))
         for index in range(-20, 20):
-            x = ( math.cos(index * 9) * 10 ) + 10
-            y = ( math.sin(index * 9) * 10 ) + 10
+            x = (math.cos(index * 9) * 10) + 10
+            y = (math.sin(index * 9) * 10) + 10
             self.surface.blit(text, (x, y))
         self.surface.blit(font.render(self.text, True, self.bcolor), (10, 10))
-        self.x = ( self.surface.get_width() / 2)
-        self.y = ( self.surface.get_height() / 2)
+        self.x = self.surface.get_width() / 2
+        self.y = self.surface.get_height() / 2
         self.bottom = self.surface.get_height()
         self.black = self.surface.copy()
         self.black.fill((0, 0, 0, 255), special_flags=pygame.BLEND_RGBA_MULT)
+
 
 class Text:
     def __init__(self, text, size, center, color):
@@ -220,21 +229,22 @@ class Text:
         self.size = size
         self.color = color
         self.center = center
-        
+
         font = pygame.font.Font(GAME_FONT, self.size)
         self.text = font.render(self.text, True, self.color)
         self.rect = self.text.get_rect()
         self.rect.center = self.center
 
+
 def update():
-    global running, background_scroll, background_scroll2, player_x, player_y, last_direction, player, player_sprites, intro_scroll
-    global reset_timer, immune_timer
+    global running, background_scroll, background_scroll2, player_x, player_y, last_direction
+    global player, player_sprites, intro_scroll, reset_timer, immune_timer
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
     keys = pygame.key.get_pressed()
-    
+
     if game_mode == "play":
         direction_x = ""
         direction_y = ""
@@ -338,6 +348,7 @@ def update():
                 if i[7]:
                     i[6].rect.centerx = i[1]
 
+
 def evolve(evolve_type):
     global player_gen, level, player_prey, enemy_prey, player_predator, enemy_predator
     if player_gen < 4:
@@ -384,13 +395,14 @@ def evolve(evolve_type):
         mode_select("level")
     else:
         mode_select("win")
-        
+
 
 def check_collide(sprite):
     if pygame.Rect.colliderect(player.rect, sprite.rect):
         if pygame.sprite.collide_mask(player, sprite):
             return True
     return False
+
 
 def check_collisions():
     global evolve_count, play_text1, player_health, play_text2, level, player_gen, immune_timer
@@ -402,9 +414,10 @@ def check_collisions():
                 if evolve_count:
                     evolve_count -= 1
                     if evolve_count:
-                        play_text1 = Text("Evolve " + str(evolve_count), 40, ((WIDTH / 4), 20), (255,255,255))
+                        play_text1 = Text("Evolve " + str(evolve_count), 40,
+                                          ((WIDTH / 4), 20), (255, 255, 255))
                     else:
-                        play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255,255,255))
+                        play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255, 255, 255))
     for i in fish:
         if not evolve_count and i[7]:
             if check_collide(i[0]):
@@ -416,7 +429,8 @@ def check_collisions():
                         player_health -= 1
                         if player_health:
                             immune_timer = IMMUNE
-                            play_text2 = Text("Health " + str(player_health), 40, ((WIDTH * 3 / 4), 20), (255,255,255))
+                            play_text2 = Text("Health " + str(player_health), 40,
+                                              ((WIDTH * 3 / 4), 20), (255, 255, 255))
                         else:
                             mode_select("over")
             elif i[5] in player_prey:
@@ -426,9 +440,10 @@ def check_collisions():
                     if evolve_count:
                         evolve_count -= 1
                         if evolve_count:
-                            play_text1 = Text("Evolve " + str(evolve_count), 40, ((WIDTH / 4), 20), (255,255,255))
+                            play_text1 = Text("Evolve " + str(evolve_count), 40,
+                                              ((WIDTH / 4), 20), (255, 255, 255))
                         else:
-                            play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255,255,255))
+                            play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255, 255, 255))
         elif i[4] == "enemy":
             if i[5] in enemy_predator:
                 if not immune_timer:
@@ -436,7 +451,8 @@ def check_collisions():
                         player_health -= 1
                         if player_health:
                             immune_timer = IMMUNE
-                            play_text2 = Text("Health " + str(player_health), 40, ((WIDTH * 3 / 4), 20), (255,255,255))
+                            play_text2 = Text("Health " + str(player_health), 40,
+                                              ((WIDTH * 3 / 4), 20), (255, 255, 255))
                         else:
                             mode_select("over")
             elif i[5] in enemy_prey:
@@ -446,9 +462,11 @@ def check_collisions():
                     if evolve_count:
                         evolve_count -= 1
                         if evolve_count:
-                            play_text1 = Text("Evolve " + str(evolve_count), 40, ((WIDTH / 4), 20), (255,255,255))
+                            play_text1 = Text("Evolve " + str(evolve_count), 40,
+                                              ((WIDTH / 4), 20), (255, 255, 255))
                         else:
-                            play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255,255,255))
+                            play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255, 255, 255))
+
 
 def draw():
     screen.fill('midnightblue')
@@ -471,12 +489,18 @@ def draw():
         screen.blit(play_text1.text, play_text1.rect)
         screen.blit(play_text2.text, play_text2.rect)
     elif game_mode == "intro":
-        screen.blit(intro_text6.surface, (CENTER_X - intro_text1.x + 295 - intro_scroll, CENTER_Y - intro_text1.y))
-        screen.blit(intro_text5.surface, (CENTER_X - intro_text1.x + 170 - (intro_scroll * 0.7), CENTER_Y - intro_text1.y - (intro_scroll * 0.7)))
-        screen.blit(intro_text4.surface, (CENTER_X - intro_text1.x + 85 - (intro_scroll * 0.7), CENTER_Y - intro_text1.y + (intro_scroll * 0.7)))
-        screen.blit(intro_text3.surface, (CENTER_X - intro_text1.x - 34 + (intro_scroll * 0.7), CENTER_Y - intro_text1.y - (intro_scroll * 0.7)))
-        screen.blit(intro_text2.surface, (CENTER_X - intro_text1.x - 155 + (intro_scroll * 0.7), CENTER_Y - intro_text1.y + (intro_scroll * 0.7)))
-        screen.blit(intro_text1.surface, (CENTER_X - intro_text1.x - 274 + intro_scroll, CENTER_Y - intro_text1.y))
+        screen.blit(intro_text6.surface, (CENTER_X - intro_text1.x + 295 - intro_scroll,
+                                          CENTER_Y - intro_text1.y))
+        screen.blit(intro_text5.surface, (CENTER_X - intro_text1.x + 170 - (intro_scroll * 0.7),
+                                          CENTER_Y - intro_text1.y - (intro_scroll * 0.7)))
+        screen.blit(intro_text4.surface, (CENTER_X - intro_text1.x + 85 - (intro_scroll * 0.7),
+                                          CENTER_Y - intro_text1.y + (intro_scroll * 0.7)))
+        screen.blit(intro_text3.surface, (CENTER_X - intro_text1.x - 34 + (intro_scroll * 0.7),
+                                          CENTER_Y - intro_text1.y - (intro_scroll * 0.7)))
+        screen.blit(intro_text2.surface, (CENTER_X - intro_text1.x - 155 + (intro_scroll * 0.7),
+                                          CENTER_Y - intro_text1.y + (intro_scroll * 0.7)))
+        screen.blit(intro_text1.surface, (CENTER_X - intro_text1.x - 274 + intro_scroll,
+                                          CENTER_Y - intro_text1.y))
     elif game_mode == "level":
         screen.blit(level_text1.text, level_text1.rect)
         screen.blit(level_text2.text, level_text2.rect)
@@ -494,10 +518,12 @@ def draw():
         screen.blit(player.image, player.rect)
     pygame.display.flip()
 
+
 def mode_select(mode):
-    global game_mode, player, intro_scroll, reset_timer, level_text1, level_text2, play_text1, evolve_count, player_health, player_x, player_y
-    global play_text2, over_text1, over_text2, player_gen, level, player_prey, enemy_prey, player_predator, enemy_predator, info_text1, info_text2
-    global prey_list, predator_list, last_direction
+    global game_mode, player, intro_scroll, reset_timer, level_text1, level_text2, play_text1
+    global evolve_count, player_health, player_x, player_y, play_text2, over_text1, over_text2
+    global player_gen, level, player_prey, enemy_prey, player_predator, enemy_predator, info_text1
+    global info_text2, prey_list, predator_list, last_direction
     if mode == "intro":
         evolve_count = (level * 3)
         intro_scroll = HEIGHT
@@ -514,7 +540,8 @@ def mode_select(mode):
     elif mode == "level":
         evolve_count = (level * 3)
         reset_timer = TIMER
-        level_text1 = Text("Generation " + str(level), 80, (CENTER_X, (HEIGHT / 4)), (255,255,255))
+        level_text1 = Text("Generation " + str(level), 80, (CENTER_X, (HEIGHT / 4)),
+                           (255, 255, 255))
         if player_gen == 1:
             player_type = "Proto-Life"
         elif player_gen == 2:
@@ -527,15 +554,15 @@ def mode_select(mode):
             player_type = "Late Omnivore"
         else:
             player_type = "Late Carnivore"
-        level_text2 = Text(player_type, 70, (CENTER_X, (HEIGHT / 2)), (255,255,255))
+        level_text2 = Text(player_type, 70, (CENTER_X, (HEIGHT / 2)), (255, 255, 255))
         load_player(player_gen)
         player.rect.center = CENTER_X, (HEIGHT * 0.75)
         game_mode = "level"
     elif mode == "info":
         reset_timer = TIMER
         prey_list = []
-        info_text1 = Text("Food", 100, (CENTER_X, (HEIGHT / 5)), (255,255,255))
-        if player_gen  in [1, 2, 4, 5]:
+        info_text1 = Text("Food", 100, (CENTER_X, (HEIGHT / 5)), (255, 255, 255))
+        if player_gen in [1, 2, 4, 5]:
             prey = load_sprite("food")
             prey_list.append(prey)
         if player_prey:
@@ -551,7 +578,7 @@ def mode_select(mode):
             i.rect.center = (j / (len(prey_list) + 1) * WIDTH), (HEIGHT * 2 / 5)
             j += 1
         predator_list = []
-        info_text2 = Text("Predators", 100, (CENTER_X, (HEIGHT * 3 / 5)), (255,255,255))
+        info_text2 = Text("Predators", 100, (CENTER_X, (HEIGHT * 3 / 5)), (255, 255, 255))
         if player_predator:
             for i in player_predator:
                 predator = load_sprite("player-" + str(i))
@@ -569,10 +596,11 @@ def mode_select(mode):
         player_health = HEALTH
         last_direction = "up"
         if evolve_count:
-            play_text1 = Text("Evolve " + str(evolve_count), 40, ((WIDTH / 4), 20), (255,255,255))
+            play_text1 = Text("Evolve " + str(evolve_count), 40, ((WIDTH / 4), 20), (255, 255, 255))
         else:
-            play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255,255,255))
-        play_text2 = Text("Health " + str(player_health), 40, ((WIDTH * 3 / 4), 20), (255,255,255))
+            play_text1 = Text("Evolve", 40, ((WIDTH / 4), 20), (255, 255, 255))
+        play_text2 = Text("Health " + str(player_health), 40, ((WIDTH * 3 / 4), 20),
+                          (255, 255, 255))
         create_food(6)
         create_fish(level)
         load_player(player_gen)
@@ -582,25 +610,27 @@ def mode_select(mode):
         game_mode = "play"
     elif mode == "over":
         reset_timer = TIMER
-        over_text1 = Text("Game Over", 100, (CENTER_X, (HEIGHT / 4)), (255,255,255))
-        over_text2 = Text("Reached Gen " + str(level), 70, (CENTER_X, (HEIGHT / 2)), (255,255,255))
+        over_text1 = Text("Game Over", 100, (CENTER_X, (HEIGHT / 4)), (255, 255, 255))
+        over_text2 = Text("Reached Gen " + str(level), 70,
+                          (CENTER_X, (HEIGHT / 2)), (255, 255, 255))
         load_player(player_gen)
         player.rect.center = CENTER_X, (HEIGHT * 0.75)
         game_mode = "over"
     elif mode == "win":
         reset_timer = TIMER
-        over_text1 = Text("Game Won", 100, (CENTER_X, (HEIGHT / 4)), (255,255,255))
-        over_text2 = Text("Final Evolution", 70, (CENTER_X, (HEIGHT / 2)), (255,255,255))
+        over_text1 = Text("Game Won", 100, (CENTER_X, (HEIGHT / 4)), (255, 255, 255))
+        over_text2 = Text("Final Evolution", 70, (CENTER_X, (HEIGHT / 2)), (255, 255, 255))
         load_player(player_gen)
         player.rect.center = CENTER_X, (HEIGHT * 0.75)
         game_mode = "over"
 
-intro_text1 = Bubble_Text("E", 180, (0,128,0), (0,64,0))
-intro_text2 = Bubble_Text("v", 180, (178,63,0), (70,24,0))
-intro_text3 = Bubble_Text("o", 180, (0,128,0), (0,64,0))
-intro_text4 = Bubble_Text("l", 180, (137,22,136), (64,6,64))
-intro_text5 = Bubble_Text("v", 180, (0,128,0), (0,64,0))
-intro_text6 = Bubble_Text("e", 180, (111,135,255), (5,25,126))
+
+intro_text1 = Bubble_Text("E", 180, (0, 128, 0), (0, 64, 0))
+intro_text2 = Bubble_Text("v", 180, (178, 63, 0), (70, 24, 0))
+intro_text3 = Bubble_Text("o", 180, (0, 128, 0), (0, 64, 0))
+intro_text4 = Bubble_Text("l", 180, (137, 22, 136), (64, 6, 64))
+intro_text5 = Bubble_Text("v", 180, (0, 128, 0), (0, 64, 0))
+intro_text6 = Bubble_Text("e", 180, (111, 135, 255), (5, 25, 126))
 
 mode_select(game_mode)
 
